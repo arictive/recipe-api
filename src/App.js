@@ -2,8 +2,26 @@ import React, { Component } from 'react'
 import './App.css';
 import Form from './components/Form';
 import Hero from './components/Hero';
+import Recipes from "./components/Recipes";
+
+const API_KEY = "ac9a9b603155eb8a8a830b9b8ee76a60";
+const APP_ID = "0df1f7d4";
+// const OLD_VER_QUERY = "https://api.edamam.com/search?q=chicken&app_id=${APP_ID}&app_key=${API_KEY}&from=0&to=10&calories=591-722&health=alcohol-free"
 
 class App extends Component {
+  state = {
+    recipes: []
+  }
+  getRecipe = async (e) => {
+    const recipeName = e.target.elements.recipeName.value;
+    e.preventDefault();
+    // const api_call = await fetch(`https://api.edamam.com/search?q=${recipeName}&app_id=${APP_ID}&app_key=${API_KEY}&from=0&to=12&random=true`);
+    const api_call = await fetch(`https://api.edamam.com/api/recipes/v2?type=public&beta=false&q=${recipeName}&app_id=${APP_ID}&app_key=${API_KEY}&random=true`);
+
+    const data = await api_call.json();
+    this.setState({ recipes: data.hits });
+    console.log(this.state.recipes);
+  }
   render() {
     return (
       <div className="App">
@@ -14,7 +32,8 @@ class App extends Component {
           <span className="pl-2 font-bold text-2xl">Food Recipes</span>
         </header>
         <Hero />
-        <Form />
+        <Form getRecipe={this.getRecipe} />
+        <Recipes recipes={this.state.recipes} />
       </div>
     );
   }
